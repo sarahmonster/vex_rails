@@ -73,7 +73,7 @@
       };
       $vexContent = vex.open(options);
       if (options.focusFirstInput) {
-        $vexContent.find('input[type="text"], input[type="submit"]').first().focus();
+        $vexContent.find('input[type="submit"], textarea, input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="email"], input[type="month"], input[type="number"], input[type="password"], input[type="search"], input[type="tel"], input[type="text"], input[type="time"], input[type="url"], input[type="week"]').first().focus();
       }
       return $vexContent;
     };
@@ -100,7 +100,7 @@
       }
       defaultPromptOptions = {
         message: "<label for=\"vex\">" + (options.label || 'Prompt:') + "</label>",
-        input: "<input name=\"vex\" type=\"text\" class=\"vex-dialog-prompt-input\" placeholder=\"" + (options.placeholder || '') + "\" />"
+        input: "<input name=\"vex\" type=\"text\" class=\"vex-dialog-prompt-input\" placeholder=\"" + (options.placeholder || '') + "\"  value=\"" + (options.value || '') + "\" />"
       };
       options = $.extend({}, defaultPromptOptions, options);
       return dialog.open(options);
@@ -114,7 +114,7 @@
       return $form;
     };
     dialog.getFormValueOnSubmit = function(formData) {
-      if (formData.vex) {
+      if (formData.vex || formData.vex === '') {
         if (formData.vex === '_vex-empty-value') {
           return true;
         }
@@ -127,11 +127,13 @@
       var $buttons;
       $buttons = $('<div class="vex-dialog-buttons" />');
       $.each(buttons, function(index, button) {
-        return $buttons.append($("<input type=\"" + button.type + "\" />").val(button.text).addClass(button.className + ' vex-dialog-button ' + (index === 0 ? 'vex-first ' : '') + (index === buttons.length - 1 ? 'vex-last ' : '')).bind('click.vex', function(e) {
+        var $button;
+        $button = $("<input type=\"" + button.type + "\" />").val(button.text).addClass(button.className + ' vex-dialog-button ' + (index === 0 ? 'vex-first ' : '') + (index === buttons.length - 1 ? 'vex-last ' : '')).bind('click.vex', function(e) {
           if (button.click) {
             return button.click($(this).parents("." + vex.baseClassNames.content), e);
           }
-        }));
+        });
+        return $button.appendTo($buttons);
       });
       return $buttons;
     };
@@ -141,7 +143,7 @@
   if (typeof define === 'function' && define.amd) {
     define(['jquery', 'vex'], vexDialogFactory);
   } else if (typeof exports === 'object') {
-    module.exports = vexDialogFactory(require('jquery'), require('vex'));
+    module.exports = vexDialogFactory(require('jquery'), require('./vex.js'));
   } else {
     window.vex.dialog = vexDialogFactory(window.jQuery, window.vex);
   }
